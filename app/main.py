@@ -1,21 +1,32 @@
 from fastapi import FastAPI, Query
 from typing import List
 import pandas as pd
+import os
+
 from .data_processing import (
     load_excel_data,
     cumulative_returns_and_alpha,
     exposure_difference,
 )
 
+
 app = FastAPI(title="Antipodes Financial APIs")
 
 FILE_PATH = "Returns_and_Constituent_Data.xlsx"
-returns_df, constituents_df = load_excel_data(FILE_PATH)
+returns_df, constituents_df = None, None
 
+@app.on_event("startup")
+def startup_event():
+    global returns_df, constituents_df
+    if not os.path.exists(FILE_PATH):
+        raise FileNotFoundError(f"Excel file not found: {FILE_PATH}")
+    returns_df, constituents_df = load_excel_data(FILE_PATH)
+    
 
 @app.get("/returns")
 def get_returns(
     as_of: str,
+    # Sample outputs are 1,6 and 12 months
     day_period: List[int] = Query(default=[30, 90, 180]),
     fund_col: str = "Fund",
     bench_col: str = "Benchmark",
