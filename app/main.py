@@ -43,12 +43,12 @@ def get_returns(
 def get_exposure(
     start_date: str,
     end_date: str,
-    group_by: str = "AntipodesRegion",
-    date_col: str = "Date",
+    index_id: str = Query(default="BENCHA", description="Filter by IndexID"),
+    date_col: str = "IndexDate",
     weight_col: str = "Weight",
     na_strategy: str = Query(default="keep", pattern="^(keep|zero|drop)$"),
 ):
     result = exposure_difference(
-        constituents_df, start_date, end_date, group_by, date_col, weight_col, na_strategy
+        constituents_df, start_date, end_date, date_col, weight_col, index_id, na_strategy
     )
     return {"results": result}
