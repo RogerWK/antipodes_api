@@ -26,12 +26,13 @@ def startup_event():
 @app.get("/returns")
 def get_returns(
     as_of: str,
-    # Sample outputs are 1,6 and 12 months
-    day_period: List[int] = Query(default=[30, 90, 180]),
-    fund_col: str = "Fund",
-    bench_col: str = "Benchmark",
+    day_period: List[int] = Query(default=[30,60,90,180], description="List of periods in days for 1,3,6,12"),
+    vehicle_col: str = "VehicleID",
+    return_col: str = "Return",
     date_col: str = "Date",
-    na_strategy: str = Query(default="keep", pattern="^(keep|zero|drop)$"),
+    fund_id: str = Query(default="FUNDA", description="Fund VehicleID filter"),
+    bench_id: str = Query(default="BENCHA", description="Benchmark VehicleID filter"),
+    na_strategy: str = Query(default="keep", pattern="^(keep|zero|drop)$", description="NaN handling strategy"),
 ):
     result = cumulative_returns_and_alpha(
         returns_df, as_of, fund_col, bench_col, date_col, day_period, na_strategy
