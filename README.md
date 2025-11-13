@@ -38,7 +38,7 @@ antipodes_api
 
 |Parameter   |	Type   |	Required |	  Default	      |             Description                  |
 | :--------  |:------: |:------:   | :---------------:|-----------------------------------------:|
-|as_of	     |str	     |  Yes	     |     -	          |  End date of the calculation (YYYY-MM-DD)|
+|as_of	     |str	     |   Yes	   |     -	          |  End date of the calculation (YYYY-MM-DD)|
 |month_period|List[int]|	 No	     |   [1,3,6,12]	    |  List of periods in months               |
 |vehicle_col |str	     |   No	     |   "VehicleID"	  |  Column name for vehicle ID              |
 |return_col	 |str	     |   No	     |   "Return"	      |  Column name for return values           |
