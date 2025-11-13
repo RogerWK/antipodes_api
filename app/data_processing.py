@@ -57,8 +57,8 @@ def cumulative_returns_and_alpha(df, as_of_date, vehicle_col, return_col,date_co
         fund_series = period_df.loc[period_df[vehicle_col] == fund_id, return_col]
         bench_series = period_df.loc[period_df[vehicle_col] == bench_id, return_col]
         
-        fund_return = geometric_cumulative_return(period_df[fund_col], na_strategy)
-        bench_return = geometric_cumulative_return(period_df[bench_col], na_strategy)
+        fund_return = geometric_cumulative_return(fund_series, na_strategy)
+        bench_return = geometric_cumulative_return(bench_series, na_strategy)
         
         # Calculate the differences and check if any nan exist
         alpha = (fund_return - bench_return) if pd.notna(fund_return) and pd.notna(bench_return) else np.nan
@@ -103,5 +103,5 @@ def exposure_difference(df, start_date, end_date, date_col, weight_col, index_id
     merged["Difference"] = merged["EndWeight"] - merged["StartWeight"]
     merged["StartDate"] = start_date.strftime("%Y-%m-%d")
     merged["EndDate"] = end_date.strftime("%Y-%m-%d")
-    merged = merged[["StartDate", "EndDate", "VehicleID", group_by, "StartWeight", "EndWeight", "Difference"]]
+    merged = merged[["StartDate", "EndDate", "VehicleID", "AntipodesRegion", "StartWeight", "EndWeight", "Difference"]]
     return merged.to_dict(orient="records")
