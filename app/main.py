@@ -32,7 +32,7 @@ def get_returns(
 def get_exposure(
     start_date: str,
     end_date: str,
-    group_by: str = "Antipodes Region",
+    group_by: str = "AntipodesRegion",
     date_col: str = "Date",
     weight_col: str = "Weight",
     na_strategy: str = Query(default="keep", regex="^(keep|zero|drop)$"),
