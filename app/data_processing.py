@@ -79,7 +79,7 @@ def exposure_difference(df, start_date, end_date, group_by, date_col, weight_col
     end_df= df[df[date_col] == end_date]
 
     start_sum = start_df.groupby(group_by, dropna=False)[weight_col].sum().reset_index().rename(columns={weight_col: "StartWeight"})
-    end_sum = right_df.groupby(group_by, dropna=False)[weight_col].sum().reset_index().rename(columns={weight_col: "EndWeight"})
+    end_sum = end_df.groupby(group_by, dropna=False)[weight_col].sum().reset_index().rename(columns={weight_col: "EndWeight"})
 
     merged = pd.merge(start_sum, end_sum, on=group_by, how="outer")
     merged["StartWeight"] = merged["StartWeight"].fillna(0)
