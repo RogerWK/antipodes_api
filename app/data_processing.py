@@ -36,7 +36,8 @@ def average_geometric_mean(returns: pd.Series, na_strategy: str = "drop") -> flo
     return gmean(1 + returns) - 1
 '''   
 
-def cumulative_returns_and_alpha(df, as_of_date, fund_col, bench_col, date_col, day_period, na_strategy="keep"):
+def cumulative_returns_and_alpha(df, as_of_date, vehicle_col, return_col,date_col, day_period, fund_id: str = "FUNDA",
+    bench_id: str = "BENCHA", na_strategy="keep"):
     
     # Ensure the inputs are the datetime format
     df[date_col] = pd.to_datetime(df[date_col])
@@ -45,17 +46,24 @@ def cumulative_returns_and_alpha(df, as_of_date, fund_col, bench_col, date_col, 
     
     #The for loop may not be the most efficient approach for large datasets, but it serves the purpose for this task.
     for w in day_period:
+        
         # Get start date based on entered day_period
         start_date = as_of_date - pd.Timedelta(days=w)
+        
         # Filtering to only keep rows between the start date and as of date
         period_df = df[(df[date_col] >= start_date) & (df[date_col] <= as_of_date)]
+
+        # Filter by VehicleID for Fund A and Benchmark A
+        fund_series = period_df.loc[period_df[vehicle_col] == fund_id, return_col]
+        bench_series = period_df.loc[period_df[vehicle_col] == bench_id, return_col]
+        
         fund_return = geometric_cumulative_return(period_df[fund_col], na_strategy)
         bench_return = geometric_cumulative_return(period_df[bench_col], na_strategy)
         
         # Calculate the differences and check if any nan exist
         alpha = (fund_return - bench_return) if pd.notna(fund_return) and pd.notna(bench_return) else np.nan
         output.append({
-            "as_of": as_of_date.strftime("%Y-%m-%d"),
+            "AsOf": as_of_date.strftime("%Y-%m-%d"),
             "Period": w,
             "FundReturn": fund_return,
             "BenchmarkReturn": bench_return,
