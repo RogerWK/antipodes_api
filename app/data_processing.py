@@ -21,9 +21,8 @@ def geometric_cumulative_return(returns: pd.Series, na_strategy: str = "keep") -
         
     # Reference: https://www.investopedia.com/terms/g/geometricmean.asp  
     # μ geometric=([(1+R1)(1+R2)…(1+Rn)] power of 1/n) −1       
-    returns_count=len(returns)
     """Cumulative geometric mean (compounded return)"""
-    return np.prod((1 + returns))**(1/returns_count) - 1
+    return np.prod((1 + returns))**(1/len(returns)) - 1
     
 '''
 # Alternatively method for the average daily geometric mean return
@@ -65,7 +64,7 @@ def cumulative_returns_and_alpha(df, as_of_date, fund_col, bench_col, date_col, 
     return output
 
 # In this task the start_date: 1st of April 2025 and the end_date is 30th of June 2025
-def exposure_difference(df, start_date, end_date, group_by, date_col, weight_col, na_strategy="keep"):
+def exposure_difference(df, start_date, end_date, date_col, weight_col, index_id="BENCHA", na_strategy="keep"):
     df[date_col] = pd.to_datetime(df[date_col])
     start_date = pd.to_datetime(start_date)
     end_date = pd.to_datetime(end_date)
@@ -74,15 +73,27 @@ def exposure_difference(df, start_date, end_date, group_by, date_col, weight_col
         df[weight_col] = df[weight_col].fillna(0)
     elif na_strategy == "drop":
         df = df.dropna(subset=[weight_col])
+        
+    # Filter for selected IndexID (default BENCHA)
+    df_filtered = df[df["IndexID"] == index_id].copy()
+    df_filtered = df_filtered.rename(columns={"IndexID": "VehicleID"})
+    
+    start_df = df_filtered[df_filtered[date_col] == start_date]
+    end_df= df_filtered[df_filtered[date_col] == end_date]
 
-    start_df = df[df[date_col] == start_date]
-    end_df= df[df[date_col] == end_date]
+    start_sum = start_df.groupby(["VehicleID","AntipodesRegion"], dropna=False)[weight_col].sum().reset_index().rename(
+        columns={weight_col: "StartWeight"}
+    )
+    end_sum = end_df.groupby(["VehicleID", "AntipodesRegion"], dropna=False)[weight_col].sum().reset_index().rename(
+        columns={weight_col: "EndWeight"}
+    )
 
-    start_sum = start_df.groupby(group_by, dropna=False)[weight_col].sum().reset_index().rename(columns={weight_col: "StartWeight"})
-    end_sum = end_df.groupby(group_by, dropna=False)[weight_col].sum().reset_index().rename(columns={weight_col: "EndWeight"})
-
-    merged = pd.merge(start_sum, end_sum, on=group_by, how="outer")
+    
+    merged = pd.merge(start_sum, end_sum, on=["VehicleID", "AntipodesRegion"], how="outer")
     merged["StartWeight"] = merged["StartWeight"].fillna(0)
     merged["EndWeight"] = merged["EndWeight"].fillna(0)
-    merged["difference"] = merged["StartWeight"]- merged["EndWeight"]
+    merged["Difference"] = merged["EndWeight"] - merged["StartWeight"]
+    merged["StartDate"] = start_date.strftime("%Y-%m-%d")
+    merged["EndDate"] = end_date.strftime("%Y-%m-%d")
+    merged = merged[["StartDate", "EndDate", "VehicleID", group_by, "StartWeight", "EndWeight", "Difference"]]
     return merged.to_dict(orient="records")
