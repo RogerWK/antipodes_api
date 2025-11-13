@@ -35,7 +35,7 @@ def get_exposure(
     group_by: str = "AntipodesRegion",
     date_col: str = "Date",
     weight_col: str = "Weight",
-    na_strategy: str = Query(default="keep", regex="^(keep|zero|drop)$"),
+    na_strategy: str = Query(default="keep", pattern="^(keep|zero|drop)$"),
 ):
     result = exposure_difference(
         constituents_df, start_date, end_date, group_by, date_col, weight_col, na_strategy
