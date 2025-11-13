@@ -36,7 +36,7 @@ def average_geometric_mean(returns: pd.Series, na_strategy: str = "drop") -> flo
     return gmean(1 + returns) - 1
 '''   
 
-def cumulative_returns_and_alpha(df, as_of_date, vehicle_col, return_col,date_col, day_period, fund_id: str = "FUNDA",
+def cumulative_returns_and_alpha(df, as_of_date, vehicle_col, return_col,date_col, month_period, fund_id: str = "FUNDA",
     bench_id: str = "BENCHA", na_strategy="keep"):
     
     # Ensure the inputs are the datetime format
@@ -45,10 +45,10 @@ def cumulative_returns_and_alpha(df, as_of_date, vehicle_col, return_col,date_co
     output = []
     
     #The for loop may not be the most efficient approach for large datasets, but it serves the purpose for this task.
-    for w in day_period:
+    for m in month_period:
         
-        # Get start date based on entered day_period
-        start_date = as_of_date - pd.Timedelta(days=w)
+        # Get start date based on entered month_period
+        start_date = as_of_date - pd.DateOffset(months=m)
         
         # Filtering to only keep rows between the start date and as of date
         period_df = df[(df[date_col] >= start_date) & (df[date_col] <= as_of_date)]
@@ -64,7 +64,7 @@ def cumulative_returns_and_alpha(df, as_of_date, vehicle_col, return_col,date_co
         alpha = (fund_return - bench_return) if pd.notna(fund_return) and pd.notna(bench_return) else np.nan
         output.append({
             "AsOf": as_of_date.strftime("%Y-%m-%d"),
-            "Period": w,
+            "Period": m,
             "FundReturn": fund_return,
             "BenchmarkReturn": bench_return,
             "Alpha": alpha
