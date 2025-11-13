@@ -1,0 +1,29 @@
+name: Build and Push Docker Image - Antipodes
+
+on:
+  # [workflow_dispatch]- Allows manual triggering of the workflow
+
+  # Trigger the workflow only when changes occur in specific Docker-related files on the main branch
+  push:
+    branches: [ main ]
+    paths:
+      - 'antipodes_api/Dockerfile' #Example
+      - 'OTHER_FILE_DIRECTORY/Dockerfile'
+
+jobs:
+  publish_images:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build ./api/ -t USER_NAME/FILE_DIRECTORY:latest
+        # Builds the Docker image from the specified directory
+
+      - name: Push Docker image to registry
+        run: |
+          docker login -u USER_NAME -p ${{ secrets.DOCKER_ACCESS_TOKEN_HERE }}
+          docker push USER_NAME/FILE_DIRECTORY:latest
+        # Authenticates and pushes the image to the Docker registry
