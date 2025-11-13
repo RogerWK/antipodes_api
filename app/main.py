@@ -35,7 +35,15 @@ def get_returns(
     na_strategy: str = Query(default="keep", pattern="^(keep|zero|drop)$", description="NaN handling strategy"),
 ):
     result = cumulative_returns_and_alpha(
-        returns_df, as_of, fund_col, bench_col, date_col, day_period, na_strategy
+        returns_df,
+        as_of_date=as_of,
+        vehicle_col=vehicle_col,
+        return_col=return_col,
+        date_col=date_col,
+        day_period=day_period,
+        fund_id=fund_id,
+        bench_id=bench_id,
+        na_strategy=na_strategy
     )
     return {"results": result}
 
