@@ -26,7 +26,7 @@ def startup_event():
 @app.get("/returns")
 def get_returns(
     as_of: str,
-    day_period: List[int] = Query(default=[30,60,90,180], description="List of periods in days for 1,3,6,12"),
+    month_period: List[int] = Query(default=[1,3,6,12], description="List of periods in months"),
     vehicle_col: str = "VehicleID",
     return_col: str = "Return",
     date_col: str = "Date",
@@ -40,7 +40,7 @@ def get_returns(
         vehicle_col=vehicle_col,
         return_col=return_col,
         date_col=date_col,
-        day_period=day_period,
+        month_period=month_period,
         fund_id=fund_id,
         bench_id=bench_id,
         na_strategy=na_strategy
