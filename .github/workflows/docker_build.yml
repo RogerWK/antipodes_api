@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: docker build ./api/ -t USER_NAME/FILE_DIRECTORY:latest
+        run: docker build ./antipodes_api/ -t USER_NAME/FILE_DIRECTORY:latest
         # Builds the Docker image from the specified directory
 
       - name: Push Docker image to registry
