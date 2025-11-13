@@ -20,7 +20,7 @@ def get_returns(
     fund_col: str = "Fund",
     bench_col: str = "Benchmark",
     date_col: str = "Date",
-    na_strategy: str = Query(default="keep", regex="^(keep|zero|drop)$"),
+    na_strategy: str = Query(default="keep", pattern="^(keep|zero|drop)$"),
 ):
     result = cumulative_returns_and_alpha(
         returns_df, as_of, fund_col, bench_col, date_col, day_period, na_strategy
