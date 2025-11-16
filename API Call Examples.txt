@@ -1,3 +1,7 @@
+FastAPI default local IP:
+http://127.0.0.1:8000/
+
+To run the API locally, will need to start it with: uvicorn app.main:app --reload
 
 For Returns:
 GET /returns?as_of=2025-06-30&month_period=1&month_period=3&month_period=6&month_period=12
