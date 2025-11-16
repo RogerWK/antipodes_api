@@ -2,6 +2,7 @@ from fastapi import FastAPI, Query
 from typing import List
 import pandas as pd
 import os
+from pathlib import Path
 
 from .data_processing import (
     load_excel_data,
@@ -12,7 +13,11 @@ from .data_processing import (
 
 app = FastAPI(title="Antipodes Financial APIs")
 
-FILE_PATH = "Returns_and_Constituent_Data.xlsx"
+# Ensure Excel file path is correct -16/11/2025
+BASE_DIR = Path(__file__).resolve().parents[1]
+FILE_PATH = BASE_DIR / "Returns_and_Constituent_Data.xlsx"
+
+
 returns_df, constituents_df = None, None
 
 @app.on_event("startup")
