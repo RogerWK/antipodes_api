@@ -1,0 +1,36 @@
+name: Test & Docker Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Add repo to PYTHONPATH
+        run: echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
+
+      - name: Run pytest
+        run: pytest -v
+
+      - name: Build Docker image
+        run: docker build -t antipodes_api:latest .
+
+      - name: Run Docker container test
+        run: docker run --rm antipodes_api:latest uvicorn app.main:app --host 0.0.0.0 --port 8000
