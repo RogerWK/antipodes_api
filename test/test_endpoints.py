@@ -1,28 +1,25 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
+import pandas as pd
 
 client = TestClient(app)
 
-def test_exposure_endpoint(monkeypatch):
-    import pandas as pd
-    from app.data_processing import load_excel_data
-
-    # Mock data
-    returns_df = pd.DataFrame()
-    constituents_df = pd.DataFrame({
-        "IndexID": ["BENCHA"],
-        "AntipodesRegion": ["RegionA"],
-        "Weight": [0.5],
-        "IndexDate": pd.to_datetime(["2025-06-30"])
+@pytest.fixture
+def sample_returns_df(monkeypatch):
+    # Mock your data loading function to return a sample DataFrame
+    sample_df = pd.DataFrame({
+        "VehicleID": ["A", "B"],
+        "Date": ["2025-06-01", "2025-06-02"],
+        "Return": [0.01, 0.02],
+        "FundID": ["FUNDA", "FUNDA"],
+        "BenchID": ["BENCHA", "BENCHA"]
     })
+    # Monkeypatch the function in main.py that loads the Excel
+    monkeypatch.setattr("app.main.load_returns_data", lambda: sample_df)
+    return sample_df
 
-    # Patch load_excel_data
-    monkeypatch.setattr("app.main.load_excel_data", lambda filepath: (returns_df, constituents_df))
-
-    from app.main import startup_event
-    startup_event()
-
-    response = client.get("/exposure?start_date=2025-06-30&end_date=2025-06-30")
+def test_returns_endpoint(sample_returns_df):
+    response = client.get("/returns", params={"as_of": "2025-06-30"})
     assert response.status_code == 200
     assert "results" in response.json()
