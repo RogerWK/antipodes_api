@@ -1,7 +1,6 @@
 import pytest
 from httpx import AsyncClient
-from app.main import app
-
+from antipodes_api.app.main import app
 @pytest.mark.asyncio
 async def test_returns_endpoint():
     async with AsyncClient(app=app, base_url="http://test") as client:
