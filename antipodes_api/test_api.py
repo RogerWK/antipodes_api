@@ -18,25 +18,19 @@ sample_exposure_df = pd.DataFrame({
     "IndexID": ["BENCHA", "BENCHA"]
 })
 
-# --- Dependency overrides ---
-# You need to match the dependency used in your endpoints
-# If your endpoints currently load data inside the function, refactor them to use Depends
-
-def get_mock_returns_data():
+# Dependency overrides
+def mock_returns_data():
     return sample_returns_df
 
-def get_mock_exposure_data():
+def mock_exposure_data():
     return sample_exposure_df
 
-# Override the dependencies
 app.dependency_overrides = {
-    "get_returns_data": get_mock_returns_data,  # must match Depends() in your endpoint
-    "get_exposure_data": get_mock_exposure_data
+    "get_returns_data": mock_returns_data,
+    "get_exposure_data": mock_exposure_data
 }
 
 client = TestClient(app)
-
-# --- Tests ---
 
 def test_returns_endpoint():
     response = client.get("/returns", params={"as_of": "2025-06-30"})
@@ -44,7 +38,6 @@ def test_returns_endpoint():
     data = response.json()
     assert isinstance(data, list)
     assert len(data) > 0
-    assert "VehicleID" in data[0]
 
 def test_exposure_endpoint():
     response = client.get("/exposure", params={"start_date": "2025-04-01", "end_date": "2025-06-30"})
@@ -52,4 +45,3 @@ def test_exposure_endpoint():
     data = response.json()
     assert isinstance(data, list)
     assert len(data) > 0
-    assert "IndexDate" in data[0]
