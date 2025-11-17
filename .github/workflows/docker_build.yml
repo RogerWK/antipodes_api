@@ -17,13 +17,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      # Builds the Docker image from the specified directory
       - name: Build Docker image
         run: docker build ./antipodes_api/ -t USER_NAME/FILE_DIRECTORY:latest
-        # Builds the Docker image from the specified directory
-
+        
+     
       - name: Push Docker image to registry
+        # Authenticates and pushes the image to the Docker registry
         run: |
           docker login -u USER_NAME -p ${{ secrets.DOCKER_ACCESS_TOKEN_HERE }}
           docker push USER_NAME/FILE_DIRECTORY:latest
-        # Authenticates and pushes the image to the Docker registry
+        
